@@ -1,0 +1,160 @@
+
+.menu {
+  width: min(48rem, 90vw);
+  display: flex;
+  flex-direction: column;
+  gap: 4rem;
+  align-items: center;
+
+  &__logo {
+    max-width: 7.2rem;
+  }
+}
+
+/*
+* Select player section
+************************/
+
+.player-selection {
+  background: var(--semi-dark-navy);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  padding: 2.4rem;
+  border-radius: 1rem;
+  gap: 2.4rem;
+
+  &__title {
+    font-size: 1.6rem;
+  }
+
+  &__note {
+    font-size: 1.6rem;
+    opacity: 0.7;
+  }
+  
+  /*
+  * Selection wrapper
+  ********************/
+
+  &__choice {
+    background: var(--dark-navy);
+    width: 100%;
+    border-radius: 1.6rem;
+    padding: 1rem;
+    height: 8rem;
+
+    /*
+    * Slider container
+    *******************/
+
+    &__slider {
+      height: 100%;
+      position: relative;
+      display: flex;
+      width: 100%;
+
+      /*
+      * Slider 
+      *********/
+
+      &::before {
+        background: var(--silver);
+        content: '';
+        position: absolute;
+        transition: left .2s ease-in-out;
+        width: 50%;
+        height: 100%;
+        border-radius: 1.6rem;
+      }
+    }
+  }
+
+  /*
+  * Selection buttons
+  ********************/
+
+  &__option {
+    flex: 1;
+    cursor: pointer;
+    background: var(--silver);
+    margin: 1rem;
+  }
+
+  &__x-selected {
+    mask: url('../assets/icon-x-dark.svg') no-repeat center;
+    -webkit-mask: url('../assets/icon-x-dark.svg') no-repeat center;
+  }
+
+  &__o-selected {
+    mask: url('../assets/icon-o-dark.svg') no-repeat center;
+    -webkit-mask: url('../assets/icon-o-dark.svg') no-repeat center;
+  }
+}
+
+/*
+* Slider states
+****************/
+
+.x-selected::before {
+  left: 0;
+}
+
+.x-selected .player-selection__x-selected {
+  background: var(--dark-navy);
+}
+
+.o-selected::before {
+  left: 50%;
+}
+
+.o-selected .player-selection__o-selected {
+  background: var(--dark-navy);
+}
+
+
+/*
+* Buttons
+*****************/
+
+.start-game {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 3rem;
+
+  &__button {
+    font-size: 2rem;
+    text-transform: uppercase;
+    width: 100%;
+    padding: 1.6rem;
+    border-radius: 1.5rem;
+    font-weight: bold;
+    border: 0;
+    cursor: pointer;
+    transition: all .1s ease-in;
+
+    &:hover {
+      transform: translateY(4px);
+    }
+  }
+
+  .vs-pc {
+    background: var(--light-yellow);
+    box-shadow: 0px 8px 0px 0px #E69C2E;
+    
+    &:hover {
+      box-shadow: 0px 4px 0px 0px #E69C2E;
+    }
+  }
+
+  .vs-player {
+    background: var(--light-blue);
+    box-shadow: 0px 8px 0px 0px #2B9A95;
+
+    &:hover {
+      box-shadow: 0px 4px 0px 0px #2B9A95;
+    }
+  }
+}
