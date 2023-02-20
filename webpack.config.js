@@ -15,12 +15,14 @@ const config = {
   entry: './src/scripts/main.js',
   output: {
     path: path.resolve(__dirname, 'dist'),
+    filename: '[name].js',
+    assetModuleFilename: 'assets/[name][ext]'
   },
   devServer: {
     open: true,
     host: 'localhost',
     watchFiles: ["src/*"],
-    hot: true,
+    hot: true
   },
   plugins: [
     new HtmlWebpackPlugin({
@@ -48,7 +50,7 @@ const config = {
       },
       {
         test: /\.(eot|svg|ttf|woff|woff2|png|jpg|gif)$/i,
-        type: 'asset',
+        type: 'asset/resource'
       },
 
       // Add your rules for custom modules here
