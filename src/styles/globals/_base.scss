@@ -1,6 +1,6 @@
-/******************************************
+/***************
 /* VARIABLES
-/*******************************************/
+/**************/
 
 :root {
   --dark-navy: #1A2A33;
@@ -13,9 +13,9 @@
   --light-yellow-hover: #FFC860;
 }
 
-/******************************************
+/*****************
 /* BASE STYLES
-/*******************************************/
+/*****************/
 
 html {
   font-size: 62.5%;
@@ -42,14 +42,10 @@ main {
   align-items: center;
 }
 
-/*
-* General states
-*****************/
-
-.displayed {
-  opacity: 1;
-  visibility: visible;
+.menu, .board {
+  width: min(48rem, 90vw);
 }
+
 
 // .dark {
 //   background: var(--very-dark-blue);

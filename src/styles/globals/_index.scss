@@ -1,4 +1,12 @@
 @forward '../../../node_modules/normalize.css/normalize.css';
 @forward 'base';
 @forward 'menu';
-@forward 'game';
+@forward 'board';
+
+/*
+* General states
+*****************/
+
+.displayed {
+  display: block;
+}

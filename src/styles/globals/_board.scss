@@ -1,0 +1,67 @@
+.board {
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
+
+  &__header {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    align-items: center;
+    grid-template-rows: 6rem;
+    gap: 2.5rem;
+  }
+
+  &__logo {
+    height: 60%;
+    align-self: flex-end;
+  }
+
+  &__turn-sign {
+    text-transform: uppercase;
+    background: var(--semi-dark-navy);
+    border-radius: 10px;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+
+    &::before {
+      background: url('../assets/icon-x-silver.svg') no-repeat center;
+      content: '';
+      background-size: cover;
+      width: 2rem;
+      height: 2rem;
+    }
+  }
+
+  &__restart {
+    background: var(--silver);
+    width: 50%;
+    height: calc(100% - 5px);
+    border-radius: 10px;
+    justify-self: flex-end;
+    cursor: pointer;
+    box-shadow: 0px 5px 0 rgba(243, 243, 243, 0.411);
+    border: 0;
+    transition: all .2s ease-in-out;
+
+    &:hover {
+      box-shadow: 0px 2px 0 rgba(243, 243, 243, 0.411);
+      transform: translateY(3px);
+    }
+  }
+
+  &__fields {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+    height: min(48rem, 90vw);
+    gap: 2.5rem;
+  }
+
+  &__field {
+    background: var(--semi-dark-navy);
+    border-radius: 10px;box-shadow: 0px 1rem 0 rgba(0, 0, 0, 0.267);
+  }
+}

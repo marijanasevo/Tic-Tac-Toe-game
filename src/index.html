@@ -14,7 +14,7 @@
 <body>
   <main>
     <!-- New game menu -->
-    <div class="menu displayed">
+    <div class="menu">
       <img class="menu__logo" src="./assets/logo.svg" alt="xo logo">
       
       <div class="player-selection">
@@ -38,7 +38,27 @@
     <!-- New game menu end -->
     
     <!-- Gameboard -->
-    <div class="board"></div>
+    <div class="board">
+        <div class="board__header">
+          <img src="./assets/logo.svg" alt="tic tac toe logo" class="board__logo">
+          <div class="board__turn-sign">turn</div>
+          <button class="board__restart">
+            <img src="./assets/icon-restart.svg" alt="" class="board__restart-icon">
+          </button>
+        </div>
+        <div class="board__fields">
+          <div class="board__field"></div>
+          <div class="board__field"></div>
+          <div class="board__field"></div>
+          <div class="board__field"></div>
+          <div class="board__field"></div>
+          <div class="board__field"></div>
+          <div class="board__field"></div>
+          <div class="board__field"></div>
+          <div class="board__field"></div>
+        </div>
+        <div class="board__counters"></div>
+    </div>
     <!-- Gameboard end -->
     <!-- Modal -->
     <div class="modal modal__winner"></div>

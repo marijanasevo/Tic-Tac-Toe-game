@@ -1,10 +1,10 @@
 
 .menu {
-  width: min(48rem, 90vw);
   display: flex;
   flex-direction: column;
   gap: 4rem;
   align-items: center;
+  display: none;
 
   &__logo {
     max-width: 7.2rem;
@@ -27,11 +27,13 @@
 
   &__title {
     font-size: 1.6rem;
+    margin: 0;
   }
 
   &__note {
     font-size: 1.6rem;
     opacity: 0.7;
+    margin: 0;
   }
   
   /*
