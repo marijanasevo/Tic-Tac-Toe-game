@@ -3,7 +3,7 @@
   flex-direction: column;
   gap: 2.5rem;
 
-  &__header {
+  &__header, &__counters {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     align-items: center;
@@ -19,7 +19,7 @@
   &__turn-sign {
     text-transform: uppercase;
     background: var(--semi-dark-navy);
-    border-radius: 10px;
+    border-radius: 1rem;
     height: 100%;
     display: flex;
     align-items: center;
@@ -39,7 +39,7 @@
     background: var(--silver);
     width: 50%;
     height: calc(100% - 5px);
-    border-radius: 10px;
+    border-radius: 1rem;
     justify-self: flex-end;
     cursor: pointer;
     box-shadow: 0px 5px 0 rgba(243, 243, 243, 0.411);
@@ -62,6 +62,65 @@
 
   &__field {
     background: var(--semi-dark-navy);
-    border-radius: 10px;box-shadow: 0px 1rem 0 rgba(0, 0, 0, 0.267);
+    border-radius: 1rem;
+    box-shadow: 0px 1rem 0 rgba(0, 0, 0, 0.267);
+    transition: box-shadow .2s ease-in-out, transform .2s ease-in-out;
+
+    &:hover:not(.occupied) {
+      background: var(--semi-dark-navy) url('../assets/icon-x-outline.svg') no-repeat center;
+      background-size: 60%;
+      transform: translateY(0.3rem);
+      box-shadow: 0px 0.7rem 0 rgba(0, 0, 0, 0.267);
+      cursor: pointer;
+    }
+
+    &.occupied.x {
+      background: var(--semi-dark-navy) url('../assets/icon-x.svg') no-repeat center;
+      background-size: 60%;
+    }
+
+    &.occupied.o {
+      background: var(--semi-dark-navy) url('../assets/icon-o.svg') no-repeat center;
+      background-size: 60%;
+    }
+  }
+
+  &__score-x {
+    height: 100%;
+    border-radius: 1rem;
+    background: var(--light-blue);
+  }
+
+  &__score-tie {
+    height: 100%;
+    border-radius: 1rem;
+    background: var(--silver);
+  }
+
+  &__score-o {
+    height: 100%;
+    border-radius: 1rem;
+    background: var(--light-yellow);
+  }
+
+  &__counters {
+    grid-template-rows: 8rem;
+    color: var(--dark-navy);
+  }
+
+  &__score {
+    display: flex;
+    gap: .6rem;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    letter-spacing: 1.2px;
+
+    & .value {
+      font-weight: 900;
+      font-size: 3rem;
+      line-height: 2.4rem;
+    }
   }
 }
+

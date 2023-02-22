@@ -3,6 +3,7 @@ import '../assets/icon-x-dark.svg';
 import '../assets/icon-o-dark.svg';
 import '../assets/icon-x-silver.svg';
 import '../assets/icon-restart.svg';
+import '../assets/icon-x-outline.svg';
 import '../styles/styles.scss';
 
 

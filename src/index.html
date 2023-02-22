@@ -37,7 +37,7 @@
     </div>
     <!-- New game menu end -->
     
-    <!-- Gameboard -->
+    <!-- Board -->
     <div class="board">
         <div class="board__header">
           <img src="./assets/logo.svg" alt="tic tac toe logo" class="board__logo">
@@ -47,23 +47,62 @@
           </button>
         </div>
         <div class="board__fields">
+          <div class="board__field occupied x"></div>
           <div class="board__field"></div>
           <div class="board__field"></div>
-          <div class="board__field"></div>
-          <div class="board__field"></div>
+          <div class="board__field occupied o"></div>
           <div class="board__field"></div>
           <div class="board__field"></div>
           <div class="board__field"></div>
           <div class="board__field"></div>
           <div class="board__field"></div>
         </div>
-        <div class="board__counters"></div>
+        <div class="board__counters">
+          <div class="board__score board__score-x">
+            <span class="label">X (You)</span>
+            <span class="value">4</span>
+          </div>
+          <div class="board__score board__score-tie">
+            <span class="label">Ties</span>
+            <span class="value">2</span>
+          </div>
+          <div class="board__score board__score-o">
+            <span class="label">O (CPU)</span>
+            <span class="value">10</span>
+          </div>
+        </div>
     </div>
-    <!-- Gameboard end -->
-    <!-- Modal -->
-    <div class="modal modal__winner"></div>
-    <div class="modal modal__tie"></div>
-    <div class="modal modal__restart"></div>
+    <!-- Board end -->
+
+    <!-- Modals start -->
+    <div class="modal modal__winner">
+      <div class="modal__container">
+        <div class="won-lost-tie">Oh no, you lost</div>
+        <div class="wins-round x">Takes the round</div>
+        <div class="what-next-buttons">
+          <button class="cancel-button">quit</button>
+          <button class="restart-button">next round</button>
+        </div>
+      </div>
+    </div>
+    <div class="modal modal__tie">
+      <div class="modal__container">
+        <div class="won-lost-tie  bigger">It's a tie!</div>
+        <div class="what-next-buttons">
+          <button class="cancel-button">quit</button>
+          <button class="restart-button">next round</button>
+        </div>
+      </div>
+    </div>
+    <div class="modal modal__restart">
+      <div class="modal__container">
+        <div class="won-lost-tie  bigger">Restart game?</div>
+        <div class="what-next-buttons">
+          <button class="cancel-button">No, cancel</button>
+          <button class="restart-button">Yes, restart</button>
+        </div>
+      </div>
+    </div>
     <!-- Modal end -->
   </main>
   
