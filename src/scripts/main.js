@@ -4,8 +4,10 @@ import '../assets/icon-o-dark.svg';
 import '../assets/icon-x-silver.svg';
 import '../assets/icon-restart.svg';
 import '../assets/icon-x-outline.svg';
+import '../assets/icon-o-outline.svg';
+import '../assets/icon-x.svg';
+import '../assets/icon-o.svg';
 import '../styles/styles.scss';
-
 
 
 let xSelected = document.querySelector('.player-selection__x-selected');
