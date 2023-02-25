@@ -64,18 +64,15 @@ I've been playing with webpack just to get a feel of it.  -->
 ``` bash
 git clone https://github.com/marijanasevo/Tic-Tac-Toe-game.git
 ```
+
 2. Change into the project directory:
 ```bash
 cd Tic-Tac-Toe-game
 ```
-3. Install dependencies
-```bash
-npm install
-```
-4. Start the application
-```bash
-npm run serve
-```
+
+3. Install dependencies `npm install`
+
+4. Start the application with `npm run serve`
 or run `npm run build` to bundle your application.
 
 
