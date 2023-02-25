@@ -38,7 +38,7 @@
     <!-- New game menu end -->
     
     <!-- Board -->
-    <div class="board">
+    <div class="board turn-x displayed">
         <div class="board__header">
           <img src="./assets/logo.svg" alt="tic tac toe logo" class="board__logo">
           <div class="board__turn-sign">turn</div>
@@ -47,15 +47,15 @@
           </button>
         </div>
         <div class="board__fields">
-          <div class="board__field occupied x"></div>
-          <div class="board__field"></div>
-          <div class="board__field"></div>
-          <div class="board__field occupied o"></div>
-          <div class="board__field"></div>
-          <div class="board__field"></div>
-          <div class="board__field"></div>
-          <div class="board__field"></div>
-          <div class="board__field"></div>
+          <div data-row="0" data-col="0" class="board__field"></div>
+          <div data-row="0" data-col="1" class="board__field"></div>
+          <div data-row="0" data-col="2" class="board__field"></div>
+          <div data-row="1" data-col="0" class="board__field"></div>
+          <div data-row="1" data-col="1" class="board__field"></div>
+          <div data-row="1" data-col="2" class="board__field"></div>
+          <div data-row="2" data-col="0" class="board__field"></div>
+          <div data-row="2" data-col="1" class="board__field"></div>
+          <div data-row="2" data-col="2" class="board__field"></div>
         </div>
         <div class="board__counters">
           <div class="board__score board__score-x">

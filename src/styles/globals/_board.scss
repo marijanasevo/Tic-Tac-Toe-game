@@ -1,7 +1,11 @@
 .board {
-  display: flex;
+  display: none;
   flex-direction: column;
   gap: 2.5rem;
+
+  &.displayed {
+    display: flex;
+  }
 
   &__header, &__counters {
     display: grid;
@@ -27,12 +31,21 @@
     gap: 1rem;
 
     &::before {
-      background: url('../assets/icon-x-silver.svg') no-repeat center;
       content: '';
-      background-size: cover;
       width: 2rem;
       height: 2rem;
     }
+  }
+  
+
+  &.turn-o &__turn-sign::before {
+    background: url('../assets/icon-o-silver.svg') no-repeat center;
+    background-size: cover;
+  }
+
+  &.turn-x &__turn-sign::before {
+    background: url('../assets/icon-x-silver.svg') no-repeat center;
+    background-size: cover;
   }
 
   &__restart {
@@ -60,6 +73,16 @@
     gap: 2.5rem;
   }
 
+  &.turn-x .board__field:hover:not(.occupied) {
+    background: var(--semi-dark-navy) url('../assets/icon-x-outline.svg') no-repeat center;
+    background-size: 60%;
+  }
+
+  &.turn-o .board__field:hover:not(.occupied) {
+    background: var(--semi-dark-navy) url('../assets/icon-o-outline.svg') no-repeat center;
+    background-size: 60%;
+  }
+
   &__field {
     background: var(--semi-dark-navy);
     border-radius: 1rem;
@@ -67,8 +90,6 @@
     transition: box-shadow .2s ease-in-out, transform .2s ease-in-out;
 
     &:hover:not(.occupied) {
-      background: var(--semi-dark-navy) url('../assets/icon-x-outline.svg') no-repeat center;
-      background-size: 60%;
       transform: translateY(0.3rem);
       box-shadow: 0px 0.7rem 0 rgba(0, 0, 0, 0.267);
       cursor: pointer;
