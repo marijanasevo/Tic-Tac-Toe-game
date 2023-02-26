@@ -159,18 +159,6 @@ function playerWon(winner, indexes) {
   function showModal() {
     winnerModal?.classList.add('displayed');
   }
-
-
-  // setTimeout(() => {
-  //   
-  // }, 500);
-
-  // 
-  // if(winner.includes('x') == 'o won') {
-    
-  // } else {
-    
-  // } 
 }
 
 function itsATie() {
