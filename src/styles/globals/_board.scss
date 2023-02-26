@@ -18,6 +18,7 @@
   &__logo {
     height: 60%;
     align-self: flex-end;
+    cursor: pointer;
   }
 
   &__turn-sign {
@@ -102,6 +103,16 @@
 
     &.occupied.o {
       background: var(--semi-dark-navy) url('../assets/icon-o.svg') no-repeat center;
+      background-size: 60%;
+    }
+
+    &.x.win {
+      background: var(--light-blue) url('../assets/icon-x-dark.svg') no-repeat center;
+      background-size: 60%;
+    }
+
+    &.o.win {
+      background: var(--light-yellow) url('../assets/icon-o-dark.svg') no-repeat center;
       background-size: 60%;
     }
   }

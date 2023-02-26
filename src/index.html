@@ -14,7 +14,7 @@
 <body>
   <main>
     <!-- New game menu -->
-    <div class="menu">
+    <div class="menu displayed">
       <img class="menu__logo" src="./assets/logo.svg" alt="xo logo">
       
       <div class="player-selection">
@@ -38,7 +38,7 @@
     <!-- New game menu end -->
     
     <!-- Board -->
-    <div class="board turn-x displayed">
+    <div class="board turn-x">
         <div class="board__header">
           <img src="./assets/logo.svg" alt="tic tac toe logo" class="board__logo">
           <div class="board__turn-sign">turn</div>
@@ -60,15 +60,15 @@
         <div class="board__counters">
           <div class="board__score board__score-x">
             <span class="label">X (You)</span>
-            <span class="value">4</span>
+            <span class="value">0</span>
           </div>
           <div class="board__score board__score-tie">
             <span class="label">Ties</span>
-            <span class="value">2</span>
+            <span class="value">0</span>
           </div>
           <div class="board__score board__score-o">
             <span class="label">O (CPU)</span>
-            <span class="value">10</span>
+            <span class="value">0</span>
           </div>
         </div>
     </div>
@@ -78,10 +78,10 @@
     <div class="modal modal__winner">
       <div class="modal__container">
         <div class="won-lost-tie">Oh no, you lost</div>
-        <div class="wins-round x">Takes the round</div>
+        <div class="wins-round">Takes the round</div>
         <div class="what-next-buttons">
           <button class="cancel-button">quit</button>
-          <button class="restart-button">next round</button>
+          <button class="next-button">next round</button>
         </div>
       </div>
     </div>
@@ -90,7 +90,7 @@
         <div class="won-lost-tie  bigger">It's a tie!</div>
         <div class="what-next-buttons">
           <button class="cancel-button">quit</button>
-          <button class="restart-button">next round</button>
+          <button class="next-button">next round</button>
         </div>
       </div>
     </div>
