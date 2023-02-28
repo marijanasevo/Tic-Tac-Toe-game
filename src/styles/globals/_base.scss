@@ -32,6 +32,9 @@ body {
   font-family: 'Outfit', sans-serif;
   font-size: 1.6rem;
   text-transform: uppercase;
+  overflow-y: hidden;
+  height: 100vh;
+  position: relative;
 }
 
 button {

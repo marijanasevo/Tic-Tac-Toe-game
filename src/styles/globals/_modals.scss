@@ -15,7 +15,7 @@
 
   &__container {
     height: 30rem;
-    min-width: max(75rem, 100vh);
+    min-width: min(75rem, 100vw);
     background: var(--semi-dark-navy);
     color: var(--silver);
     display: flex;
@@ -23,6 +23,25 @@
     flex-direction: column;
     align-items: center;
     gap: 3rem;
+    border-radius: 10px;
+
+    // animation
+    opacity: 0;
+    position: fixed;
+    bottom: -100%;
+    animation: slide-in .2s forwards;
+  }
+
+  @keyframes slide-in {
+    100% {
+      bottom: 35%;
+      opacity: .93;
+    }
+
+    // 70% {
+    //   bottom: -100%;
+    //   opacity: 0;
+    // }
   }
 
   
@@ -122,4 +141,5 @@
       font-size: 4rem;
       font-weight: 900;
     }
+    
 }

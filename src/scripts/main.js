@@ -105,7 +105,8 @@ function initializeGame() {
 
   // if cpu goes first
   if (vsCPU && playerOneMark == 'o') {
-    computerPlaysMove(true);
+    // computerPlaysMove(true);
+    setTimeout(() => computerPlaysMove(true), 1000)
   }
 }
 
@@ -144,15 +145,18 @@ function computerPlaysMove(playsFirst = false) {
 }
 
 function switchPlayers() {
+  // don't switch if it's game over
+  if (isGameOver(false).result != 'in progress') return;
+  board?.classList.remove('cpu');
+
   currentPlayer = (currentPlayer == 'x') ? 'o' : 'x';
   board?.classList.toggle('turn-x');
   board?.classList.toggle('turn-o');
 
   // ako je kraj igre, i kompjuter prvi sledeci igra dont 
   if (vsCPU && currentPlayer === aiPlayer ) {
-    // setTimeout(computerPlaysMove, 1000);
-
-    computerPlaysMove();
+    board?.classList.add('cpu');
+    setTimeout(computerPlaysMove, 700);
   }
 
 }
@@ -262,7 +266,7 @@ function nextRound() {
     [0, 0, 0]
   ];
 
-  if (vsCPU && aiPlayer == currentPlayer) setTimeout(() => computerPlaysMove(true), 100);
+  if (vsCPU && aiPlayer == currentPlayer) setTimeout(() => computerPlaysMove(true), 700);
 }
 
 
@@ -368,7 +372,9 @@ function toggleSelectedPlayer() {
 oSelected?.addEventListener('click', toggleSelectedPlayer);
 xSelected?.addEventListener('click', toggleSelectedPlayer);
 
-boardFields.forEach(field => field.addEventListener('click', playMove));
+boardFields.forEach(field => field.addEventListener('click', (e) => {
+  if (currentPlayer != aiPlayer) playMove.call(e.target);
+}));
 
 quitButtons.forEach(quitBtn => quitBtn.addEventListener('click', quit));
 nextRoundBtns.forEach(nexRoundBtn => nexRoundBtn.addEventListener('click', nextRound));
