@@ -1,3 +1,6 @@
+// God bless this mess ++++++++++
+// I promise I'll refactor and clean this up
+
 // Importing images
 import '../assets/logo.svg';
 import '../assets/icon-x-dark.svg';
@@ -27,6 +30,8 @@ const startGameBtns = document.querySelectorAll('.start-game__button');
 const board = document.querySelector('.board');
 const boardFields = document.querySelectorAll('.board__field');
 // Board counters
+const labelScoreX = document.querySelector('.board__score-x .label');
+const labelScoreO = document.querySelector('.board__score-o .label');
 const scoreX = document.querySelector('.board__score-x .value');
 const scoreTie = document.querySelector('.board__score-tie .value');
 const scoreO = document.querySelector('.board__score-o .value');
@@ -34,7 +39,8 @@ const scoreO = document.querySelector('.board__score-o .value');
 // Modals
 const modals = document.querySelectorAll('.modal');
 const winnerModal = document.querySelector('.modal__winner');
-const takesHeading = document.querySelector('.wins-round');
+const whoTakesHeading = document.querySelector('.wins-round');
+const whoTakesMessage = document.querySelector('.won-lost-tie');
 const tieModal = document.querySelector('.modal__tie');
 const restartModal = document.querySelector('.modal__restart');
 
@@ -46,21 +52,60 @@ const restartPromptButton = document.querySelector('.board__restart');
 const restartButton = document.querySelector('.restart-button');
 
 // Game variables
-let currentPlayer = 'x'; // always goes first
+let currentPlayer = 'x'; // goes first
 let gameBoard;
-let oponent; // human or cpu
-let opponentMark; // opponent is x or y
+let opponent; // human, cpu
+let playerOneMark; // x, o
+// p1, p2, cpu, you
+let x; 
+let o;
+let aiPlayer;
+let huPlayer;
+let vsCPU = false;
 
 let score;
 
-// Toggling menu choice button
-function toggleSelectedPlayer() {
-  if (this == xSelected) {
-    slider?.classList.remove('o-selected');
-    slider?.classList.add('x-selected');
-  } else {
-    slider?.classList.add('o-selected');
-    slider?.classList.remove('x-selected');
+// initialize new game
+function initializeGame() {
+  playerOneMark = slider.classList.contains('x-selected') ? 'x' : 'o';
+  opponent = (this.classList.value.includes('cpu')) ? 'cpu' : 'human';
+  vsCPU = (opponent == 'cpu') ? true : false;
+
+  x = (opponent == 'cpu' && playerOneMark == 'x') ? 'you' : 
+      (opponent == 'cpu' && playerOneMark == 'o') ? 'cpu' :
+      (opponent == 'human' && playerOneMark == 'x') ? 'p1' : 'p2';
+
+  o = (opponent == 'cpu' && playerOneMark == 'x') ? 'cpu' : 
+      (opponent == 'cpu' && playerOneMark == 'o') ? 'you' :
+      (opponent == 'human' && playerOneMark == 'x') ? 'p2' : 'p1';
+
+      console.log(playerOneMark, opponent, x, o, vsCPU);
+
+  gameBoard = [
+    [0, 0, 0],
+    [0, 0, 0],
+    [0, 0, 0]
+  ];
+  
+  score = {
+    playerX: 0,
+    playerO: 0,
+    ties: 0
+  };
+
+  menuScreen?.classList.remove('displayed');
+  board?.classList.add('displayed');
+  labelScoreX.innerHTML = `X (${x})`;
+  labelScoreO.innerHTML = `O (${o})`;
+
+  if (vsCPU) {
+    aiPlayer = (playerOneMark == 'x') ? 'o' : 'x';
+    huPlayer = (aiPlayer == 'x') ? 'o' : 'x'; 
+  }
+
+  // if cpu goes first
+  if (vsCPU && playerOneMark == 'o') {
+    computerPlaysMove(true);
   }
 }
 
@@ -75,7 +120,7 @@ function playMove() {
   this.classList.add('occupied', currentPlayer);
 
   // Checking if the game is resolved
-  let status = isResolved();
+  let status = isGameOver();
 
   if (status.result.includes('won')) playerWon(status.result, status.indexes);
   if (status.result.includes('tie')) itsATie();
@@ -83,33 +128,61 @@ function playMove() {
   switchPlayers();
 }
 
+function computerPlaysMove(playsFirst = false) {
+  if (!isGameOver(false).result.includes('progress')) return;
+
+  let field;
+
+  if (playsFirst) {
+    field = document.querySelector(`[data-row="0"][data-col="0"]`);
+  } else {
+    const {index: [row, col]} = minimax(gameBoard, aiPlayer);
+    field = document.querySelector(`[data-row="${row}"][data-col="${col}"]`);
+  }
+  console.log(field);
+  playMove.call(field);
+}
+
 function switchPlayers() {
   currentPlayer = (currentPlayer == 'x') ? 'o' : 'x';
   board?.classList.toggle('turn-x');
   board?.classList.toggle('turn-o');
+
+  // ako je kraj igre, i kompjuter prvi sledeci igra dont 
+  if (vsCPU && currentPlayer === aiPlayer ) {
+    // setTimeout(computerPlaysMove, 1000);
+
+    computerPlaysMove();
+  }
+
 }
 
-function isResolved() {
+function isGameOver(update = true) {
   // 000-000-000
   let currentBoard = gameBoard.join('-').replace(/,/g, '');
 
   //row|  column |     \     |   /   
   if(/111|1...1...1|1..-.1.-..1|1-.1.-1/.test(currentBoard)) {
-    scoreX.innerHTML = ++score.playerOne;
-    console.log('score player 1: ' + score.playerOne);
+    if (update) { 
+      scoreX.innerHTML = ++score.playerX; 
+      return { result: 'x won', indexes: getWinningIndexes(1) };
+    }
+    
     return { result: 'x won', indexes: getWinningIndexes(1) };
   }
 
   if(/222|2...2...2|2..-.2.-..2|2-.2.-2/.test(currentBoard)) {
-    scoreO.innerHTML = ++score.playerTwo;
-    console.log('score player 2: ' + score.playerTwo);
-    return { result: 'o won', indexes: getWinningIndexes(2) };
+    if (update) {
+      scoreO.innerHTML = ++score.playerO;
+      return { result: 'o won', indexes: getWinningIndexes(2) };
+    }
+    
+    return { result: 'o won'};
   }
 
   if(/0/.test(currentBoard)) return { result: 'in progress', indexes: null };
 
-  scoreTie.innerHTML = ++score.ties;
-  console.log('score tie: ' + score.tie);
+  if (update) scoreTie.innerHTML = ++score.ties;
   return { result: 'tie', indexes: null };
 }
 
@@ -145,7 +218,14 @@ function getWinningIndexes(player) {
 function playerWon(winner, indexes) {
 
   let takesRound = (winner.includes('x')) ? 'x' : 'o';
-  takesHeading?.classList.add(takesRound);
+  whoTakesHeading?.classList.add(takesRound);
+  let takesMessage = (takesRound == 'x' && x == 'cpu' || takesRound == 'o' && o == 'cpu') ? 'Oh no, you lost..' :
+                     (takesRound == 'x' && x == 'you' || takesRound == 'o' && o == 'you') ? 'Yes, you win!' :
+                     ((takesRound == 'x') ? x : o) + ' wins';
+                     
+  whoTakesMessage.innerHTML = takesMessage;
+
+  // console.log(playerOneMark, opponent, x, o); o cpu CPU YOU
 
   boardFields.forEach((field, i) => {
     if (i == indexes[0] || i == indexes[1] || i == indexes[2]) {
@@ -157,12 +237,12 @@ function playerWon(winner, indexes) {
   });
 
   function showModal() {
-    winnerModal?.classList.add('displayed');
+    winnerModal?.classList.add('displayed'), 700;
   }
 }
 
 function itsATie() {
-  tieModal?.classList.add('displayed');
+  setTimeout(() => tieModal?.classList.add('displayed'), 700);
 }
 
 function quit() {
@@ -181,34 +261,11 @@ function nextRound() {
     [0, 0, 0],
     [0, 0, 0]
   ];
+
+  if (vsCPU && aiPlayer == currentPlayer) setTimeout(() => computerPlaysMove(true), 100);
 }
 
-// initialize new game
-function initializeGame() {
-  let selectedMark = slider.classList.contains('x-selected') ? 'x' : 'o';
-  let opponent = (this.classList.value.includes('pc')) ? 'pc' : 'human';
 
-  gameBoard = [
-    [0, 0, 0],
-    [0, 0, 0],
-    [0, 0, 0]
-  ];
-  
-  score = {
-    playerOne: 0,
-    playerTwo: 0,
-    ties: 0
-  };
-
-  if (this.classList.contains('vs-pc')) {
-    // 
-  } else {
-
-  }
-
-  menuScreen?.classList.remove('displayed');
-  board?.classList.add('displayed');
-}
 
 function showRestartModal() {
   restartModal?.classList.add('displayed');
@@ -224,6 +281,88 @@ function restartGame() {
   scoreX.innerHTML = scoreO.innerHTML = 0
   boardFields.forEach(field => field.classList.remove('occupied', 'x', 'o', 'win'));
   restartModal.classList.remove('displayed');
+}
+
+// Computer's turn logic
+
+function emptyFields(board) {
+  let emptySpots = [];
+  
+  board.forEach((row, i) => row.forEach((cell, j) => {
+    if (cell == 0) emptySpots.push([i,j]);
+  }));
+
+  return emptySpots;
+}
+
+function minimax(board, player) {
+  let availSpots = emptyFields(board); // [[column, row], [column, row]]
+
+  // if ai wins, return 10
+  // if hu wins, return -10
+  // if tie, return 0
+  if (isGameOver(false).result.includes(aiPlayer + ' won')) {
+    return {score: 10};
+  } else if (isGameOver(false).result.includes(huPlayer + ' won')) {
+    return {score: -10};
+  } else if (availSpots.length === 0) return {score: 0};
+
+  const moves = [];
+  for (let i = 0; i < availSpots.length; i++) {
+    let move = {};
+    // move.index = gameBoard[availSpots[i][0]][availSpots[i][1]];
+    move.index = availSpots[i];
+
+    // changing the board to try out a move
+    board[availSpots[i][0]][availSpots[i][1]] = (player == 'x') ? 1 : 2;
+
+    if (player == aiPlayer) {
+      let result = minimax(board, huPlayer);
+      move.score = result.score;
+    } else {
+      let result = minimax(board, aiPlayer);
+      move.score = result.score;
+    }
+
+    // resseting the board to what it was
+    board[availSpots[i][0]][availSpots[i][1]] = 0;
+    moves.push(move);
+  }
+
+  // if it is the computer's turn loop over the moves and choose the move with the highest score
+  var bestMove;
+  if(player === aiPlayer) {
+    var bestScore = -10000;
+    for(var i = 0; i < moves.length; i++) {
+      if(moves[i].score > bestScore) {
+        bestScore = moves[i].score;
+        bestMove = i;
+      }
+    }
+  } else {
+    // else loop over the moves and choose the move with the lowest score
+    var bestScore = 10000;
+    for(var i = 0; i < moves.length; i++) {
+      if(moves[i].score < bestScore) {
+        bestScore = moves[i].score;
+        bestMove = i;
+      }
+    }
+  }
+
+  // return the chosen move (object) from the moves array
+  return moves[bestMove];
+}
+
+// Toggling menu choice button
+function toggleSelectedPlayer() {
+  if (this == xSelected) {
+    slider?.classList.remove('o-selected');
+    slider?.classList.add('x-selected');
+  } else {
+    slider?.classList.add('o-selected');
+    slider?.classList.remove('x-selected');
+  }
 }
 
 oSelected?.addEventListener('click', toggleSelectedPlayer);

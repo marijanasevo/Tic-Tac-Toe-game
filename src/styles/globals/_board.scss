@@ -96,6 +96,11 @@
       cursor: pointer;
     }
 
+    &.occupied {
+      transform: translateY(0.4rem);
+      box-shadow: 0px 0.2rem 0 rgba(0, 0, 0, 0.267);
+    }
+
     &.occupied.x {
       background: var(--semi-dark-navy) url('../assets/icon-x.svg') no-repeat center;
       background-size: 60%;
@@ -155,4 +160,3 @@
     }
   }
 }
-
