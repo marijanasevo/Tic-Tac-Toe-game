@@ -1,6 +1,3 @@
-// God bless this mess ++++++++++
-// I promise I'll refactor and clean this up
-
 // Importing images
 import '../assets/logo.svg';
 import '../assets/icon-x-dark.svg';
@@ -26,336 +23,407 @@ const slider = document.querySelector('.player-selection__choice__slider');
 // Start game buttons
 const startGameBtns = document.querySelectorAll('.start-game__button');
 
-// Board
-const board = document.querySelector('.board');
-const boardFields = document.querySelectorAll('.board__field');
-// Board counters
-const labelScoreX = document.querySelector('.board__score-x .label');
-const labelScoreO = document.querySelector('.board__score-o .label');
-const scoreX = document.querySelector('.board__score-x .value');
-const scoreTie = document.querySelector('.board__score-tie .value');
-const scoreO = document.querySelector('.board__score-o .value');
-
-// Modals
-const modals = document.querySelectorAll('.modal');
-const winnerModal = document.querySelector('.modal__winner');
-const whoTakesHeading = document.querySelector('.wins-round');
-const whoTakesMessage = document.querySelector('.won-lost-tie');
-const tieModal = document.querySelector('.modal__tie');
-const restartModal = document.querySelector('.modal__restart');
-
-// Buttons
-const quitButtons = document.querySelectorAll('.cancel-button');
-const nextRoundBtns = document.querySelectorAll('.next-button');
-const logoToMenuBtn = document.querySelector('.board__logo');
-const restartPromptButton = document.querySelector('.board__restart');
-const restartButton = document.querySelector('.restart-button');
-
-// Game variables
-let currentPlayer = 'x'; // goes first
-let gameBoard;
-let opponent; // human, cpu
-let playerOneMark; // x, o
-// p1, p2, cpu, you
-let x; 
-let o;
-let aiPlayer;
-let huPlayer;
-let vsCPU = false;
-
-let score;
-
 // initialize new game
 function initializeGame() {
-  playerOneMark = slider.classList.contains('x-selected') ? 'x' : 'o';
-  opponent = (this.classList.value.includes('cpu')) ? 'cpu' : 'human';
-  vsCPU = (opponent == 'cpu') ? true : false;
+  let vsCPU = this.classList.value.includes('cpu');
+  let game = (vsCPU) ? new TicTacToeVSCPU() : new StandardTicTacToe();
+}
 
-  x = (opponent == 'cpu' && playerOneMark == 'x') ? 'you' : 
-      (opponent == 'cpu' && playerOneMark == 'o') ? 'cpu' :
-      (opponent == 'human' && playerOneMark == 'x') ? 'p1' : 'p2';
+class StandardTicTacToe {
 
-  o = (opponent == 'cpu' && playerOneMark == 'x') ? 'cpu' : 
-      (opponent == 'cpu' && playerOneMark == 'o') ? 'you' :
-      (opponent == 'human' && playerOneMark == 'x') ? 'p2' : 'p1';
+  constructor(opponent = 'human') {
 
-      console.log(playerOneMark, opponent, x, o, vsCPU);
+    this.defineEventListeners();
+    
+    this.currentPlayer = 'x'; // x plays first initial game
+    this.playerOneMark = this.getPlayerOneMark(); // player one <- x || o
+    this.opponent = opponent; // <- human || cpu
+    this.vsCPU = (opponent == 'cpu') ? true : false; 
 
-  gameBoard = [
-    [0, 0, 0],
-    [0, 0, 0],
-    [0, 0, 0]
-  ];
+    // if (vsHuman) label <- p1 || p2 else label <- cpu || you
+    let [xLabel, oLabel] = this.getPlayerLabels(opponent, this.playerOneMark)
+    this.xLabel = xLabel;
+    this.oLabel = oLabel;
+
+    this.gameBoard = [
+      [0, 0, 0],
+      [0, 0, 0],
+      [0, 0, 0]
+    ];
+
+    this.score = {
+      playerX: 0,
+      playerO: 0,
+      ties: 0
+    };
+
+    this.updateCounterLabels(xLabel, oLabel);
+    this.showBoard();
+  }
+
+  getPlayerOneMark() {
+    return slider.classList.contains('x-selected') ? 'x' : 'o';
+  }
+
+  showBoard() {
+    menuScreen?.classList.remove('displayed');
+    this.board?.classList.add('displayed');
+  }
+
+  getPlayerLabels(opponent, playerOneMark) {
+    let x = (opponent == 'cpu'   && playerOneMark == 'x') ? 'you' : 
+            (opponent == 'cpu'   && playerOneMark == 'o') ? 'cpu' :
+            (opponent == 'human' && playerOneMark == 'x') ? 'p1'  : 'p2';
+
+    let o = (opponent == 'cpu'   && playerOneMark == 'x') ? 'cpu' : 
+            (opponent == 'cpu'   && playerOneMark == 'o') ? 'you' :
+            (opponent == 'human' && playerOneMark == 'x') ? 'p2'  : 'p1';
+
+    return [x, o];
+  }
+
+  updateCounterLabels(xLabel, oLabel) {
+    this.labelScoreX.innerHTML = `X (${xLabel})`;
+    this.labelScoreO.innerHTML = `O (${oLabel})`;
+  }
+
+  updateCounterScore(counter) {
+    if (counter == 'x') this.scoreX.innerHTML = ++this.score.playerX; 
+    if (counter == 'o') this.scoreO.innerHTML = ++this.score.playerO; 
+    if (counter == 'tie') this.scoreTie.innerHTML = ++this.score.ties; 
+  }
+
+  playMove(el) {
+    // if element is already occupied return
+    if (el.classList.contains('occupied')) return;
   
-  score = {
-    playerX: 0,
-    playerO: 0,
-    ties: 0
-  };
+    // otherwise exstract it's row and col data
+    const row = el.dataset.row;
+    const column = el.dataset.col; 
+    
+    // mark that field in board array with x: 1 || o: 2
+    this.gameBoard[row][column] = (this.currentPlayer == 'x') ? 1 : 2;
+  
+    // add .occupied and .x || .o classes
+    el.classList.add('occupied', this.currentPlayer);
 
-  menuScreen?.classList.remove('displayed');
-  board?.classList.add('displayed');
-  labelScoreX.innerHTML = `X (${x})`;
-  labelScoreO.innerHTML = `O (${o})`;
-
-  if (vsCPU) {
-    aiPlayer = (playerOneMark == 'x') ? 'o' : 'x';
-    huPlayer = (aiPlayer == 'x') ? 'o' : 'x'; 
+    this.finishTurn();
   }
 
-  // if cpu goes first
-  if (vsCPU && playerOneMark == 'o') {
-    // computerPlaysMove(true);
-    setTimeout(() => computerPlaysMove(true), 1000)
-  }
-}
-
-function playMove() {
-  if (this.classList.contains('occupied')) return;
-
-  const row = this.dataset.row;
-  const column = this.dataset.col; 
-
-  gameBoard[row][column] = (currentPlayer == 'x') ? 1 : 2;
-
-  this.classList.add('occupied', currentPlayer);
-
-  // Checking if the game is resolved
-  let status = isGameOver();
-
-  if (status.result.includes('won')) playerWon(status.result, status.indexes);
-  if (status.result.includes('tie')) itsATie();
-
-  switchPlayers();
-}
-
-function computerPlaysMove(playsFirst = false) {
-  if (!isGameOver(false).result.includes('progress')) return;
-
-  let field;
-
-  if (playsFirst) {
-    field = document.querySelector(`[data-row="0"][data-col="0"]`);
-  } else {
-    const {index: [row, col]} = minimax(gameBoard, aiPlayer);
-    field = document.querySelector(`[data-row="${row}"][data-col="${col}"]`);
-  }
-  console.log(field);
-  playMove.call(field);
-}
-
-function switchPlayers() {
-  // don't switch if it's game over
-  if (isGameOver(false).result != 'in progress') return;
-  board?.classList.remove('cpu');
-
-  currentPlayer = (currentPlayer == 'x') ? 'o' : 'x';
-  board?.classList.toggle('turn-x');
-  board?.classList.toggle('turn-o');
-
-  // ako je kraj igre, i kompjuter prvi sledeci igra dont 
-  if (vsCPU && currentPlayer === aiPlayer ) {
-    board?.classList.add('cpu');
-    setTimeout(computerPlaysMove, 700);
+  finishTurn() {
+    // check if isGameOver
+    let gameState = this.isGameOver();
+  
+    // if there is a win or tie, process it
+    if (gameState.result.includes('won')) this.celebrateWin(gameState);
+    if (gameState.result.includes('tie')) this.showModal('tie');
+  
+    this.switchPlayers();
   }
 
-}
+  switchPlayers() {
+    // don't switch if the game is over
+    if (this.isGameOver(false).result != 'in progress') return;
+  
+    // switch
+    this.currentPlayer = (this.currentPlayer == 'x') ? 'o' : 'x';
+    this.board?.classList.toggle('turn-x');
+    this.board?.classList.toggle('turn-o');
+  }
 
-function isGameOver(update = true) {
-  // 000-000-000
-  let currentBoard = gameBoard.join('-').replace(/,/g, '');
+  isGameOver(updateBoard = true) {
+    let currentBoard = this.gameBoard.join('-').replace(/,/g, ''); 
+    // 000-000-000
 
-  //row|  column |     \     |   /   
-  if(/111|1...1...1|1..-.1.-..1|1-.1.-1/.test(currentBoard)) {
-    if (update) { 
-      scoreX.innerHTML = ++score.playerX; 
-      return { result: 'x won', indexes: getWinningIndexes(1) };
+    const checkWin = (regex, player, result) => {
+      if (regex.test(currentBoard)) {
+        // if board should be updated
+        if (updateBoard) {
+          this.updateCounterScore(player);
+          return {result, indexes: this.getWinningIndexes(player == 'x' ? 1 : 2)}
+        }
+        return { result };
+      }
     }
     
-    return { result: 'x won', indexes: getWinningIndexes(1) };
-  }
+    const xWon = checkWin(/111|1...1...1|1..-.1.-..1|1-.1.-1/, 'x', 'x won');
+    if (xWon) return xWon;
 
-  if(/222|2...2...2|2..-.2.-..2|2-.2.-2/.test(currentBoard)) {
-    if (update) {
-      scoreO.innerHTML = ++score.playerO;
-      return { result: 'o won', indexes: getWinningIndexes(2) };
-    }
-    
-    return { result: 'o won'};
-  }
-
-  if(/0/.test(currentBoard)) return { result: 'in progress', indexes: null };
-
-  if (update) scoreTie.innerHTML = ++score.ties;
-  return { result: 'tie', indexes: null };
-}
-
-function getWinningIndexes(player) {
-
-  // check rows
-  for (let i = 0; i < 3; i++) {
-    if (gameBoard[i][0] == player && gameBoard[i][1] == player && gameBoard[i][2] == player) {
-      return (i == 0) ? [0, 1, 2] : (i == 1) ? [3, 4, 5] : [6, 7, 8];
-    }
-  }
-
-  // check columns
-  for (let i = 0; i < 3; i++) {
-    if (gameBoard[0][i] == player && gameBoard[1][i] == player && gameBoard[2][i] == player) {
-      return (i == 0) ? [0, 3, 6] : (i == 1) ? [1, 4, 7] : [2, 5, 8];
-    }
-  }
-
-  // check diagonal \
-  if (gameBoard[0][0] == player && gameBoard[1][1] == player && gameBoard[2][2] == player) {
-    return [0, 4, 8];
-  }
-
-  // check diagonal /
-  if (gameBoard[0][2] == player && gameBoard[1][1] == player && gameBoard[2][0] == player) {
-    return [2, 4, 6]
-  }
-
-  return null;
-}
-
-function playerWon(winner, indexes) {
-
-  let takesRound = (winner.includes('x')) ? 'x' : 'o';
-  whoTakesHeading?.classList.add(takesRound);
-  let takesMessage = (takesRound == 'x' && x == 'cpu' || takesRound == 'o' && o == 'cpu') ? 'Oh no, you lost..' :
-                     (takesRound == 'x' && x == 'you' || takesRound == 'o' && o == 'you') ? 'Yes, you win!' :
-                     ((takesRound == 'x') ? x : o) + ' wins';
-                     
-  whoTakesMessage.innerHTML = takesMessage;
-
-  // console.log(playerOneMark, opponent, x, o); o cpu CPU YOU
-
-  boardFields.forEach((field, i) => {
-    if (i == indexes[0] || i == indexes[1] || i == indexes[2]) {
-      setTimeout(() => {
-        field.classList.add('win');
-        if (i == indexes[2]) setTimeout(showModal, 600);
-      }, 200 * i);
-    }
-  });
-
-  function showModal() {
-    winnerModal?.classList.add('displayed'), 700;
-  }
-}
-
-function itsATie() {
-  setTimeout(() => tieModal?.classList.add('displayed'), 700);
-}
-
-function quit() {
-  location.reload();
-  // board?.classList.remove('displayed');
-  // menuScreen?.classList.add('displayed');
-  // modals.forEach(modal => modal.classList.remove('displayed'));
-}
-
-function nextRound() {
-  modals.forEach(modal => modal.classList.remove('displayed'));
-  boardFields.forEach(field => field.classList.remove('occupied', 'x', 'o', 'win'));
-
-  gameBoard = [
-    [0, 0, 0],
-    [0, 0, 0],
-    [0, 0, 0]
-  ];
-
-  if (vsCPU && aiPlayer == currentPlayer) setTimeout(() => computerPlaysMove(true), 700);
-}
-
-
-
-function showRestartModal() {
-  restartModal?.classList.add('displayed');
-}
-
-function restartGame() {
-  gameBoard = [
-    [0, 0, 0],
-    [0, 0, 0],
-    [0, 0, 0]
-  ];
-
-  scoreX.innerHTML = scoreO.innerHTML = 0
-  boardFields.forEach(field => field.classList.remove('occupied', 'x', 'o', 'win'));
-  restartModal.classList.remove('displayed');
-}
-
-// Computer's turn logic
-
-function emptyFields(board) {
-  let emptySpots = [];
+    const oWon = checkWin(/222|2...2...2|2..-.2.-..2|2-.2.-2/, 'o', 'o won');
+    if (oWon) return oWon;
   
-  board.forEach((row, i) => row.forEach((cell, j) => {
-    if (cell == 0) emptySpots.push([i,j]);
-  }));
+    if(/0/.test(currentBoard)) return { result: 'in progress', indexes: null };
+  
+    if (updateBoard) this.updateCounterScore('tie');
+    return { result: 'tie', indexes: null };
+  }
+  
+  getWinningIndexes(player) {
+    const checkWin = (cells) => {
+      if (cells.every((cell) => cell === player)) {
+        return true;
+      }
+    };
+  
+    // check rows
+    for (let i = 0; i < 3; i++) {
+      if (checkWin(this.gameBoard[i])) {
+        return [i * 3, i * 3 + 1, i * 3 + 2];
+      }
+    }
+  
+    // check columns
+    for (let i = 0; i < 3; i++) {
+      const column = [this.gameBoard[0][i], this.gameBoard[1][i], this.gameBoard[2][i]];
+      if (checkWin(column)) {
+        return [i, i + 3, i + 6];
+      }
+    }
+  
+    // check diagonal \
+    const diagonal1 = [this.gameBoard[0][0], this.gameBoard[1][1], this.gameBoard[2][2]];
+    if (checkWin(diagonal1)) {
+      return [0, 4, 8];
+    }
+  
+    // check diagonal /
+    const diagonal2 = [this.gameBoard[0][2], this.gameBoard[1][1], this.gameBoard[2][0]];
+    if (checkWin(diagonal2)) {
+      return [2, 4, 6];
+    }
+  }
+  
+  celebrateWin({result, indexes}) {
+    // get winner
+    let winner = (result.includes('x')) ? 'x' : 'o';
 
-  return emptySpots;
+    this.whoTakesHeading?.classList.add(winner);
+
+    // Set winning modal content
+    let takesMessage = (winner == 'x' && this.xLabel == 'cpu' || 
+                        winner == 'o' && this.oLabel == 'cpu') ? 'Oh no, you lost..' :
+
+                       (winner == 'x' && this.xLabel == 'you' || 
+                        winner == 'o' && this.oLabel == 'you') ? 'Yes, you win!' :
+                       // P1 || P2 wins
+                       ((winner == 'x') ? this.xLabel : this.oLabel) + ' wins';
+                       
+    this.whoTakesMessage.innerHTML = takesMessage;
+  
+    // go through each winning index, color it and show the modal
+    this.boardFields.forEach((field, i) => {
+      if (i == indexes[0] || i == indexes[1] || i == indexes[2]) {
+
+        setTimeout(() => {
+          field.classList.add('win');
+
+          if (i == indexes[2]) this.showModal('win');
+        }, 200 * i);
+
+      }
+    });
+  }
+
+  showModal(modal) {
+    if (modal == 'win') setTimeout(() => this.winnerModal?.classList.add('displayed'), 700);
+    if (modal == 'tie') setTimeout(() => this.tieModal?.classList.add('displayed'), 700);
+    if (modal == 'restart') this.restartModal?.classList.add('displayed');
+  }
+  
+  nextRound() {
+    this.whoTakesHeading?.classList.remove('o', 'x');
+    this.modals.forEach(modal => modal.classList.remove('displayed'));
+    this.boardFields.forEach(field => field.classList.remove('occupied', 'x', 'o', 'win'));
+  
+    this.gameBoard = [
+      [0, 0, 0],
+      [0, 0, 0],
+      [0, 0, 0]
+    ];
+  
+    if (this.vsCPU && this.aiPlayer == this.currentPlayer) setTimeout(() => this.computerPlaysMove(true), 700);
+  }
+
+  cancelRestartModal() {
+    this.restartModal?.classList.remove('displayed');
+  }
+  
+  restartGame() {
+    this.gameBoard = [
+      [0, 0, 0],
+      [0, 0, 0],
+      [0, 0, 0]
+    ];
+  
+    this.boardFields.forEach(field => field.classList.remove('occupied', 'x', 'o', 'win'));
+    this.restartModal.classList.remove('displayed');
+  }
+  
+  quit() {
+    location.reload();
+  }
+
+  defineEventListeners() {
+    // Board
+    this.board = document.querySelector('.board');
+    this.boardFields = document.querySelectorAll('.board__field');
+
+    // Board counters
+    this.labelScoreX = document.querySelector('.board__score-x .label');
+    this.labelScoreO = document.querySelector('.board__score-o .label');
+    this.scoreX = document.querySelector('.board__score-x .value');
+    this.scoreTie = document.querySelector('.board__score-tie .value');
+    this.scoreO = document.querySelector('.board__score-o .value');
+    
+    // Modals
+    this.modals = document.querySelectorAll('.modal');
+    // Winner modal
+    this.winnerModal = document.querySelector('.modal__winner');
+    this.whoTakesHeading = document.querySelector('.wins-round');
+    this.whoTakesMessage = document.querySelector('.won-lost-tie');
+    // Tie and restart
+    this.tieModal = document.querySelector('.modal__tie');
+    this.restartModal = document.querySelector('.modal__restart');
+    
+    // Buttons
+    this.quitButtons = document.querySelectorAll('.quit-button');
+    this.nextRoundBtns = document.querySelectorAll('.next-button');
+    this.logoButton = document.querySelector('.board__logo');
+    this.restartPromptButton = document.querySelector('.board__restart');
+    this.restartButton = document.querySelector('.restart-button');
+    this.cancelRestartBtn = document.querySelector('.cancel-restart-button');
+
+    // Event listeners
+    this.boardFields.forEach(field => field.onclick = (e) => this.playMove(e.target));
+
+    this.logoButton?.addEventListener('click', this.quit);
+    this.quitButtons.forEach(quitBtn => quitBtn.addEventListener('click', this.quit));
+
+    this.nextRoundBtns.forEach(nexRoundBtn => nexRoundBtn.addEventListener('click', this.nextRound.bind(this)));
+
+    this.restartPromptButton?.addEventListener('click', () => this.showModal.call(this, 'restart'));
+    this.restartButton?.addEventListener('click', this.restartGame.bind(this));
+    this.cancelRestartBtn?.addEventListener('click', this.cancelRestartModal.bind(this));
+  }
 }
 
-function minimax(board, player) {
-  let availSpots = emptyFields(board); // [[column, row], [column, row]]
+class TicTacToeVSCPU extends StandardTicTacToe {
 
-  // if ai wins, return 10
-  // if hu wins, return -10
-  // if tie, return 0
-  if (isGameOver(false).result.includes(aiPlayer + ' won')) {
-    return {score: 10};
-  } else if (isGameOver(false).result.includes(huPlayer + ' won')) {
-    return {score: -10};
-  } else if (availSpots.length === 0) return {score: 0};
+  constructor() {
+    super('cpu');
+    
+    this.defineEventListeners();
 
-  const moves = [];
-  for (let i = 0; i < availSpots.length; i++) {
-    let move = {};
-    // move.index = gameBoard[availSpots[i][0]][availSpots[i][1]];
-    move.index = availSpots[i];
+    this.aiPlayer = (this.playerOneMark == 'x') ? 'o' : 'x';
+    this.huPlayer = (this.aiPlayer == 'x') ? 'o' : 'x'; 
 
-    // changing the board to try out a move
-    board[availSpots[i][0]][availSpots[i][1]] = (player == 'x') ? 1 : 2;
+    // if CPU goes first
+    if (this.playerOneMark == 'o') {
+      setTimeout(() => this.computerPlaysMove.call(this, true), 1000)
+    }
+  }
 
-    if (player == aiPlayer) {
-      let result = minimax(board, huPlayer);
-      move.score = result.score;
+  computerPlaysMove(playsFirst = false) {
+    // don't play if the game is not in progress
+    if (!this.isGameOver(false).result.includes('progress')) return;
+  
+    let field;
+    
+    // if (cpu goes first) choose the first field
+    // hardcoding because he always chooses the same in this case
+    // to prevent going through the recursive algorithm
+    if (playsFirst) {
+      field = document.querySelector(`[data-row="0"][data-col="0"]`);
     } else {
-      let result = minimax(board, aiPlayer);
-      move.score = result.score;
+      // otherwise fire the minimax
+      const {index: [row, col]} = this.minimax(this.gameBoard, this.aiPlayer);
+      field = document.querySelector(`[data-row="${row}"][data-col="${col}"]`);
     }
-
-    // resseting the board to what it was
-    board[availSpots[i][0]][availSpots[i][1]] = 0;
-    moves.push(move);
+    
+    this.playMove.call(this, field);
   }
 
-  // if it is the computer's turn loop over the moves and choose the move with the highest score
-  var bestMove;
-  if(player === aiPlayer) {
-    var bestScore = -10000;
-    for(var i = 0; i < moves.length; i++) {
-      if(moves[i].score > bestScore) {
-        bestScore = moves[i].score;
-        bestMove = i;
-      }
-    }
-  } else {
-    // else loop over the moves and choose the move with the lowest score
-    var bestScore = 10000;
-    for(var i = 0; i < moves.length; i++) {
-      if(moves[i].score < bestScore) {
-        bestScore = moves[i].score;
-        bestMove = i;
-      }
+  switchPlayers() {
+    super.switchPlayers();
+  
+    // cpu plays automatically
+    if (this.currentPlayer === this.aiPlayer ) {
+      setTimeout(this.computerPlaysMove.bind(this), 700);
     }
   }
 
-  // return the chosen move (object) from the moves array
-  return moves[bestMove];
+  emptyFields(board) {
+    let emptySpots = [];
+    
+    board.forEach((row, i) => row.forEach((cell, j) => {
+      if (cell == 0) emptySpots.push([i,j]);
+    }));
+  
+    return emptySpots; // [[column, row], [column, row]]
+  }
+  
+  minimax(board, player) {
+    let availSpots = this.emptyFields(board);
+  
+    if (this.isGameOver(false).result.includes(this.aiPlayer + ' won')) {
+      return {score: 10};
+    } else if (this.isGameOver(false).result.includes(this.huPlayer + ' won')) {
+      return {score: -10};
+    } else if (availSpots.length === 0) return {score: 0};
+  
+    const moves = [];
+    for (let i = 0; i < availSpots.length; i++) {
+      let move = {};
+      move.index = availSpots[i];
+  
+      // changing the board to try out a move
+      board[availSpots[i][0]][availSpots[i][1]] = (player == 'x') ? 1 : 2;
+  
+      if (player == this.aiPlayer) {
+        let result = this.minimax(board, this.huPlayer);
+        move.score = result.score;
+      } else {
+        let result = this.minimax(board, this.aiPlayer);
+        move.score = result.score;
+      }
+  
+      // resseting the board to what it was
+      board[availSpots[i][0]][availSpots[i][1]] = 0;
+      moves.push(move);
+    }
+  
+    // if it is the computer's turn loop over the moves and choose the move with the highest score
+    var bestMove;
+    if(player === this.aiPlayer) {
+      var bestScore = -10000;
+      for(var i = 0; i < moves.length; i++) {
+        if(moves[i].score > bestScore) {
+          bestScore = moves[i].score;
+          bestMove = i;
+        }
+      }
+    } else {
+      // else loop over the moves and choose the move with the lowest score
+      var bestScore = 10000;
+      for(var i = 0; i < moves.length; i++) {
+        if(moves[i].score < bestScore) {
+          bestScore = moves[i].score;
+          bestMove = i;
+        }
+      }
+    }
+  
+    // return the chosen move (object) from the moves array
+    return moves[bestMove];
+  }
+
+  defineEventListeners() {
+    super.defineEventListeners();
+
+    this.boardFields.forEach(field => field.onclick = (e) => {
+      if (this.currentPlayer != this.aiPlayer) this.playMove(e.target);
+    });
+  }
 }
 
 // Toggling menu choice button
@@ -372,14 +440,4 @@ function toggleSelectedPlayer() {
 oSelected?.addEventListener('click', toggleSelectedPlayer);
 xSelected?.addEventListener('click', toggleSelectedPlayer);
 
-boardFields.forEach(field => field.addEventListener('click', (e) => {
-  if (currentPlayer != aiPlayer) playMove.call(e.target);
-}));
-
-quitButtons.forEach(quitBtn => quitBtn.addEventListener('click', quit));
-nextRoundBtns.forEach(nexRoundBtn => nexRoundBtn.addEventListener('click', nextRound));
-
 startGameBtns.forEach(button => button.addEventListener('click', initializeGame));
-logoToMenuBtn?.addEventListener('click', quit);
-restartPromptButton?.addEventListener('click', showRestartModal);
-restartButton?.addEventListener('click', restartGame)
