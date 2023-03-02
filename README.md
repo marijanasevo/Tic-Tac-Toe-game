@@ -1,10 +1,10 @@
-# Tic Tac Toe solution - in progress
+# Tic Tac Toe solution
 
 This is a solution to the [Tic Tac Toe challenge on Frontend Mentor](https://www.frontendmentor.io/challenges/tic-tac-toe-game-Re7ZF_E2v).
 
-<!-- ## Table of contents
+## Table of contents
 
-- [Tic Tac Toe solution](#frontend-mentor---news-homepage-solution)
+- [Tic Tac Toe solution](#tic-tac-toe-solution)
   - [Table of contents](#table-of-contents)
   - [Overview](#overview)
     - [The challenge](#the-challenge)
@@ -14,7 +14,8 @@ This is a solution to the [Tic Tac Toe challenge on Frontend Mentor](https://www
     - [Built with](#built-with)
     - [What I learned](#what-i-learned)
     - [Optimizations](#optimizations)
-  - [Author](#author) -->
+  - [Install](#install)
+  - [Author](#author)
 
 
 ## Overview
@@ -23,19 +24,19 @@ This is a solution to the [Tic Tac Toe challenge on Frontend Mentor](https://www
 
 Users are able to:
 
-- View the optimal layout for the game depending on their device's screen size
+- View the optimal layout for the game depending on their device's screen size (lowest 340px)
 - See hover states for all interactive elements on the page
 - Play the game either solo vs the computer or multiplayer against another person
-- Bonus 1: Save the game state in the browser so that it’s preserved if the player refreshes their browser
-- Bonus 2: Instead of having the computer randomly make their moves, try making it clever so it’s proactive in blocking your moves and trying to win
+- Bonus 1: Instead of having the computer randomly make their moves, try making it clever so it’s proactive in blocking your moves and trying to win
+<!-- - Bonus 2: Save the game state in the browser so that it’s preserved if the player refreshes their browser -->
 
 ### Screenshot
 
 <img src="./tic-tac-toe-screen-shot.png" style="border-radius: 15px; max-width: 700px">
 
-<!-- ### Links
+### Links
 
-- Live Site URL: [Live site](https://marijanasevo.github.io/tic-tac-toe-game/) -->
+- Live URL: [Live site](https://brilliant-granita-ac585f.netlify.app/)
 
 ## My process
 
@@ -47,16 +48,18 @@ Users are able to:
 - Grid
 - Flexbox
 - JavaScript
+- OOP
 - WebPack
+<!-- - localStorage -->
 
-<!-- ### What I learned
+### What I learned
 
-I've been playing with webpack just to get a feel of it.  -->
+To make the Tic Tac Toe game against CPU unbeatable I applied [minimax algorithm](https://en.wikipedia.org/wiki/Minimax) (which you can find [here](https://www.freecodecamp.org/news/how-to-make-your-tic-tac-toe-game-unbeatable-by-using-the-minimax-algorithm-9d690bad4b37/)). I also have been experimenting with webpack and I can see how this tool can be useful when working on bigger projects. Debugging with webpack, ES6 and Babel can be less convenient, next time I'll have to look up webpack source-map. 
 
 
-<!-- ### Optimizations
+### Optimizations
 
-... -->
+localStorage could be implemented.
 
 ## Install
 
