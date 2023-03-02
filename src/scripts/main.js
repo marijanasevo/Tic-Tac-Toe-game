@@ -26,24 +26,17 @@ const startGameBtns = document.querySelectorAll('.start-game__button');
 // initialize new game
 function initializeGame() {
   let vsCPU = this.classList.value.includes('cpu');
-  let game = (vsCPU) ? new TicTacToeVSCPU() : new StandardTicTacToe();
+  (vsCPU) ? new TicTacToeVSCPU() : new StandardTicTacToe();
 }
 
 class StandardTicTacToe {
 
   constructor(opponent = 'human') {
-
     this.defineEventListeners();
     
-    this.currentPlayer = 'x'; // x plays first initial game
+    this.currentPlayer = this.goesFirst = 'x'; // x plays first initial game
     this.playerOneMark = this.getPlayerOneMark(); // player one <- x || o
     this.opponent = opponent; // <- human || cpu
-    this.vsCPU = (opponent == 'cpu') ? true : false; 
-
-    // if (vsHuman) label <- p1 || p2 else label <- cpu || you
-    let [xLabel, oLabel] = this.getPlayerLabels(opponent, this.playerOneMark)
-    this.xLabel = xLabel;
-    this.oLabel = oLabel;
 
     this.gameBoard = [
       [0, 0, 0],
@@ -57,12 +50,9 @@ class StandardTicTacToe {
       ties: 0
     };
 
-    this.updateCounterLabels(xLabel, oLabel);
+    // this.updateCounterLabels(xLabel, oLabel);
+    this.updateCounterLabels();
     this.showBoard();
-  }
-
-  getPlayerOneMark() {
-    return slider.classList.contains('x-selected') ? 'x' : 'o';
   }
 
   showBoard() {
@@ -70,21 +60,22 @@ class StandardTicTacToe {
     this.board?.classList.add('displayed');
   }
 
-  getPlayerLabels(opponent, playerOneMark) {
-    let x = (opponent == 'cpu'   && playerOneMark == 'x') ? 'you' : 
-            (opponent == 'cpu'   && playerOneMark == 'o') ? 'cpu' :
-            (opponent == 'human' && playerOneMark == 'x') ? 'p1'  : 'p2';
+  assignPlayerLabels(opponent, playerOneMark) {
+    // if (vsHuman) label <- p1 || p2 else label <- cpu || you
+    this.xLabel = (opponent == 'cpu'   && playerOneMark == 'x') ? 'you' : 
+                  (opponent == 'cpu'   && playerOneMark == 'o') ? 'cpu' :
+                  (opponent == 'human' && playerOneMark == 'x') ? 'p1'  : 'p2';
 
-    let o = (opponent == 'cpu'   && playerOneMark == 'x') ? 'cpu' : 
-            (opponent == 'cpu'   && playerOneMark == 'o') ? 'you' :
-            (opponent == 'human' && playerOneMark == 'x') ? 'p2'  : 'p1';
-
-    return [x, o];
+    this.oLabel = (opponent == 'cpu'   && playerOneMark == 'x') ? 'cpu' : 
+                  (opponent == 'cpu'   && playerOneMark == 'o') ? 'you' :
+                  (opponent == 'human' && playerOneMark == 'x') ? 'p2'  : 'p1';
   }
 
-  updateCounterLabels(xLabel, oLabel) {
-    this.labelScoreX.innerHTML = `X (${xLabel})`;
-    this.labelScoreO.innerHTML = `O (${oLabel})`;
+  updateCounterLabels() {    
+    this.assignPlayerLabels(this.opponent, this.playerOneMark);
+
+    this.labelScoreX.innerHTML = `X (${this.xLabel})`;
+    this.labelScoreO.innerHTML = `O (${this.oLabel})`;
   }
 
   updateCounterScore(counter) {
@@ -112,7 +103,7 @@ class StandardTicTacToe {
 
   finishTurn() {
     // check if isGameOver
-    let gameState = this.isGameOver();
+    let gameState = this.isGameOver(true);
   
     // if there is a win or tie, process it
     if (gameState.result.includes('won')) this.celebrateWin(gameState);
@@ -123,7 +114,7 @@ class StandardTicTacToe {
 
   switchPlayers() {
     // don't switch if the game is over
-    if (this.isGameOver(false).result != 'in progress') return;
+    if (this.isGameOver().result != 'in progress') return;
   
     // switch
     this.currentPlayer = (this.currentPlayer == 'x') ? 'o' : 'x';
@@ -131,7 +122,7 @@ class StandardTicTacToe {
     this.board?.classList.toggle('turn-o');
   }
 
-  isGameOver(updateBoard = true) {
+  isGameOver(updateBoard = false) {
     let currentBoard = this.gameBoard.join('-').replace(/,/g, ''); 
     // 000-000-000
 
@@ -144,7 +135,7 @@ class StandardTicTacToe {
         }
         return { result };
       }
-    }
+    };
     
     const xWon = checkWin(/111|1...1...1|1..-.1.-..1|1-.1.-1/, 'x', 'x won');
     if (xWon) return xWon;
@@ -194,9 +185,10 @@ class StandardTicTacToe {
   }
   
   celebrateWin({result, indexes}) {
+    this.enableUserMove(false);
+
     // get winner
     let winner = (result.includes('x')) ? 'x' : 'o';
-
     this.whoTakesHeading?.classList.add(winner);
 
     // Set winning modal content
@@ -231,17 +223,22 @@ class StandardTicTacToe {
   }
   
   nextRound() {
-    this.whoTakesHeading?.classList.remove('o', 'x');
-    this.modals.forEach(modal => modal.classList.remove('displayed'));
-    this.boardFields.forEach(field => field.classList.remove('occupied', 'x', 'o', 'win'));
-  
     this.gameBoard = [
       [0, 0, 0],
       [0, 0, 0],
       [0, 0, 0]
     ];
+
+    this.whoTakesHeading?.classList.remove('o', 'x');
+    this.modals.forEach(modal => modal.classList.remove('displayed'));
+    this.boardFields.forEach(field => field.classList.remove('occupied', 'x', 'o', 'win'));
+    this.enableUserMove()
+
+    if (this.currentPlayer ==  this.goesFirst) {
+      this.switchPlayers();
+      this.goesFirst = this.currentPlayer;
+    }
   
-    if (this.vsCPU && this.aiPlayer == this.currentPlayer) setTimeout(() => this.computerPlaysMove(true), 700);
   }
 
   cancelRestartModal() {
@@ -257,6 +254,7 @@ class StandardTicTacToe {
   
     this.boardFields.forEach(field => field.classList.remove('occupied', 'x', 'o', 'win'));
     this.restartModal.classList.remove('displayed');
+    if (this.currentPlayer != this.goesFirst) this.switchPlayers();
   }
   
   quit() {
@@ -305,27 +303,38 @@ class StandardTicTacToe {
     this.restartButton?.addEventListener('click', this.restartGame.bind(this));
     this.cancelRestartBtn?.addEventListener('click', this.cancelRestartModal.bind(this));
   }
+
+  enableUserMove(enable = true) {
+    if (enable) {
+      this.board?.classList.remove('prevent-user-move');
+    } else {
+      this.board?.classList.add('prevent-user-move');
+    }
+  }
+
+  getPlayerOneMark() {
+    return slider.classList.contains('x-selected') ? 'x' : 'o';
+  }
 }
 
 class TicTacToeVSCPU extends StandardTicTacToe {
 
   constructor() {
     super('cpu');
-    
-    this.defineEventListeners();
 
-    this.aiPlayer = (this.playerOneMark == 'x') ? 'o' : 'x';
-    this.huPlayer = (this.aiPlayer == 'x') ? 'o' : 'x'; 
+    this.cpuPlayer = (this.playerOneMark == 'x') ? 'o' : 'x';
+    this.huPlayer = (this.cpuPlayer == 'x') ? 'o' : 'x'; 
 
     // if CPU goes first
     if (this.playerOneMark == 'o') {
+      this.enableUserMove(false);
       setTimeout(() => this.computerPlaysMove.call(this, true), 1000)
     }
   }
 
   computerPlaysMove(playsFirst = false) {
-    // don't play if the game is not in progress
-    if (!this.isGameOver(false).result.includes('progress')) return;
+    // don't play if gameover
+    if (!this.isGameOver().result.includes('in progress')) return;
   
     let field;
     
@@ -336,7 +345,7 @@ class TicTacToeVSCPU extends StandardTicTacToe {
       field = document.querySelector(`[data-row="0"][data-col="0"]`);
     } else {
       // otherwise fire the minimax
-      const {index: [row, col]} = this.minimax(this.gameBoard, this.aiPlayer);
+      const {index: [row, col]} = this.minimax(this.gameBoard, this.cpuPlayer);
       field = document.querySelector(`[data-row="${row}"][data-col="${col}"]`);
     }
     
@@ -345,10 +354,22 @@ class TicTacToeVSCPU extends StandardTicTacToe {
 
   switchPlayers() {
     super.switchPlayers();
-  
+    this.enableUserMove();
+
     // cpu plays automatically
-    if (this.currentPlayer === this.aiPlayer ) {
+    if (this.currentPlayer === this.cpuPlayer ) {
       setTimeout(this.computerPlaysMove.bind(this), 700);
+      // adding cpu-turn class to remove the hover effect
+      this.enableUserMove(false);
+    }
+  }
+
+  nextRound() {
+    super.nextRound();
+    
+    // if (this.cpuPlayer == this.currentPlayer) setTimeout(this.computerPlaysMove.bind(this), 700);
+    if (this.cpuPlayer == this.currentPlayer) {
+      setTimeout(this.computerPlaysMove.bind(this, true), 700);
     }
   }
 
@@ -365,9 +386,9 @@ class TicTacToeVSCPU extends StandardTicTacToe {
   minimax(board, player) {
     let availSpots = this.emptyFields(board);
   
-    if (this.isGameOver(false).result.includes(this.aiPlayer + ' won')) {
+    if (this.isGameOver().result.includes(this.cpuPlayer + ' won')) {
       return {score: 10};
-    } else if (this.isGameOver(false).result.includes(this.huPlayer + ' won')) {
+    } else if (this.isGameOver().result.includes(this.huPlayer + ' won')) {
       return {score: -10};
     } else if (availSpots.length === 0) return {score: 0};
   
@@ -379,11 +400,11 @@ class TicTacToeVSCPU extends StandardTicTacToe {
       // changing the board to try out a move
       board[availSpots[i][0]][availSpots[i][1]] = (player == 'x') ? 1 : 2;
   
-      if (player == this.aiPlayer) {
+      if (player == this.cpuPlayer) {
         let result = this.minimax(board, this.huPlayer);
         move.score = result.score;
       } else {
-        let result = this.minimax(board, this.aiPlayer);
+        let result = this.minimax(board, this.cpuPlayer);
         move.score = result.score;
       }
   
@@ -394,7 +415,7 @@ class TicTacToeVSCPU extends StandardTicTacToe {
   
     // if it is the computer's turn loop over the moves and choose the move with the highest score
     var bestMove;
-    if(player === this.aiPlayer) {
+    if(player === this.cpuPlayer) {
       var bestScore = -10000;
       for(var i = 0; i < moves.length; i++) {
         if(moves[i].score > bestScore) {
@@ -421,7 +442,7 @@ class TicTacToeVSCPU extends StandardTicTacToe {
     super.defineEventListeners();
 
     this.boardFields.forEach(field => field.onclick = (e) => {
-      if (this.currentPlayer != this.aiPlayer) this.playMove(e.target);
+      if (this.currentPlayer != this.cpuPlayer) this.playMove(e.target);
     });
   }
 }

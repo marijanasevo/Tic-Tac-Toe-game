@@ -74,12 +74,12 @@
     gap: 2.5rem;
   }
 
-  &.turn-x:not(.cpu) .board__field:hover:not(.occupied) {
+  &.turn-x:not(.prevent-user-move) .board__field:hover:not(.occupied) {
     background: var(--semi-dark-navy) url('../assets/icon-x-outline.svg') no-repeat center;
     background-size: 60%;
   }
 
-  &.turn-o:not(.cpu) .board__field:hover:not(.occupied) {
+  &.turn-o:not(.prevent-user-move) .board__field:hover:not(.occupied) {
     background: var(--semi-dark-navy) url('../assets/icon-o-outline.svg') no-repeat center;
     background-size: 60%;
   }
@@ -159,4 +159,8 @@
       line-height: 2.4rem;
     }
   }
+}
+
+.prevent-user-move .field {
+  pointer-events: none;
 }
