@@ -328,8 +328,14 @@ class TicTacToeVSCPU extends StandardTicTacToe {
     // if CPU goes first
     if (this.playerOneMark == 'o') {
       this.enableUserMove(false);
+      this.thinkingAnimation();
       setTimeout(() => this.computerPlaysMove.call(this, true), 1000)
     }
+  }
+
+  thinkingAnimation(enabled = true) {
+    if (enabled) this.board?.classList.add('thinking');
+    else this.board?.classList.remove('thinking');
   }
 
   computerPlaysMove(playsFirst = false) {
@@ -355,12 +361,14 @@ class TicTacToeVSCPU extends StandardTicTacToe {
   switchPlayers() {
     super.switchPlayers();
     this.enableUserMove();
+    this.thinkingAnimation(false);
 
     // cpu plays automatically
     if (this.currentPlayer === this.cpuPlayer ) {
       setTimeout(this.computerPlaysMove.bind(this), 700);
       // adding cpu-turn class to remove the hover effect
       this.enableUserMove(false);
+      this.thinkingAnimation();
     }
   }
 

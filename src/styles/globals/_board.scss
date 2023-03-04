@@ -38,7 +38,6 @@
     }
   }
   
-
   &.turn-o &__turn-sign::before {
     background: url('../assets/icon-o-silver.svg') no-repeat center;
     background-size: cover;
@@ -47,6 +46,20 @@
   &.turn-x &__turn-sign::before {
     background: url('../assets/icon-x-silver.svg') no-repeat center;
     background-size: cover;
+  }
+
+  &.thinking &__turn-sign::before {
+    animation: thinking .5s ease-in-out infinite alternate-reverse none;
+  }
+
+  @keyframes thinking {
+    100% {
+      transform: scale(1.1);
+    }
+
+    0% {
+      transform: scale(.9);
+    }
   }
 
   &__restart {
