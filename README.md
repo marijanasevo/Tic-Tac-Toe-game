@@ -32,7 +32,7 @@ Users are able to:
 
 ### Screenshot
 
-<img src="./tic-tac-toe-screen-shot.png" style="border-radius: 15px; max-width: 700px">
+<img src="./tic-tac-toe.gif" style="border-radius: 15px; max-width: 700px">
 
 ### Links
 
