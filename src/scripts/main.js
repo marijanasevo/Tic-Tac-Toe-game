@@ -375,7 +375,6 @@ class TicTacToeVSCPU extends StandardTicTacToe {
   nextRound() {
     super.nextRound();
     
-    // if (this.cpuPlayer == this.currentPlayer) setTimeout(this.computerPlaysMove.bind(this), 700);
     if (this.cpuPlayer == this.currentPlayer) {
       setTimeout(this.computerPlaysMove.bind(this, true), 700);
     }
